@@ -173,6 +173,7 @@ def replaceProperties = [mod_id: mod_id, mod_name: mod_name, mod_version: mod_ve
         minecraft_version_range: minecraft_version_range, forge_version_range: forge_version_range,
         loader_version_range: loader_version_range]
 processResources {
+    duplicatesStrategy = 'exclude'
     inputs.properties replaceProperties
     replaceProperties.put 'project', project
 
