@@ -1,59 +1,88 @@
 package me.infamous.kanekaido.common.abilities;
 
+import me.ichun.mods.morph.common.morph.MorphHandler;
+import me.infamous.kanekaido.common.entities.EnergyBeam;
+import me.infamous.kanekaido.common.logic.BeamColor;
 import me.infamous.kanekaido.common.network.KeyBindAction;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.FireballEntity;
-import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.world.World;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public enum KaidoAbility {
 
     FIREBALL(
             (serverPlayer) -> {
-                World world = serverPlayer.level;
+                LivingEntity activeEntity = getActiveEntity(serverPlayer);
+                World world = activeEntity.level;
 
-                Vector3d upVector = serverPlayer.getUpVector(1.0F);
-                Quaternion upVectorQ = new Quaternion(new Vector3f(upVector), 0.0F, true);
-                Vector3d viewVector = serverPlayer.getViewVector(1.0F);
-                Vector3f viewVectorF = new Vector3f(viewVector);
-                viewVectorF.transform(upVectorQ);
+                Vector3d viewVector = activeEntity.getViewVector(1.0F);
 
                 double xA = viewVector.x * Constants.FIREBALL_VELOCITY;
                 double yA = viewVector.y * Constants.FIREBALL_VELOCITY;
                 double zA = viewVector.z * Constants.FIREBALL_VELOCITY;
-                FireballEntity fireball = new FireballEntity(world, serverPlayer, xA, yA, zA);
-                fireball.setPos(serverPlayer.getX(), serverPlayer.getY(0.5D) + 0.5D, serverPlayer.getZ());
-                fireball.shoot(viewVectorF.x(), viewVectorF.y(), viewVectorF.z(), Constants.FIREBALL_VELOCITY, 0.0F);
+                FireballEntity fireball = new FireballEntity(world, activeEntity, xA, yA, zA);
+                fireball.getTags().add("kaido");
+                fireball.setPos(activeEntity.getX(), getHeadY(activeEntity), activeEntity.getZ());
+                fireball.shoot(viewVector.x(), viewVector.y(), viewVector.z(), Constants.FIREBALL_VELOCITY, 0.0F);
                 fireball.explosionPower = 1;
                 world.addFreshEntity(fireball);
             },
-            (serverPlayer) -> {
-            },
-            (serverPlayer) -> {
-            }
+            doNothing(),
+            doNothing()
     ),
 
     AIR_SLASH(
-            (serverPlayer) -> {
-    },
-            (serverPlayer) -> {
-    },
-            (serverPlayer) -> {
-    }
+            doNothing(),
+            doNothing(),
+            doNothing()
     ),
 
     ENERGY_BEAM(
             (serverPlayer) -> {
+                LivingEntity activeEntity = getActiveEntity(serverPlayer);
+                World worldIn = activeEntity.level;
+
+                EnergyBeam energyBeam = new EnergyBeam(Constants.BEAM_COLOR, worldIn, activeEntity);
+                energyBeam.moveTo(getHeadX(activeEntity), getHeadY(activeEntity), getHeadZ(activeEntity), activeEntity.yRot, activeEntity.xRot);
+                energyBeam.setOwner(activeEntity);
+                worldIn.addFreshEntity(energyBeam);
     },
+            doNothing(),
             (serverPlayer) -> {
-    },
-            (serverPlayer) -> {
+                LivingEntity activeEntity = getActiveEntity(serverPlayer);
+                List<EnergyBeam> beams = activeEntity.level.getEntitiesOfClass(EnergyBeam.class, activeEntity.getBoundingBox().inflate(1), energyBeam -> energyBeam.getOwner() == activeEntity);
+                beams.forEach(Entity::remove);
     }
     );
+
+    private static LivingEntity getActiveEntity(ServerPlayerEntity serverPlayer) {
+        LivingEntity activeMorphEntity = MorphHandler.INSTANCE.getActiveMorphEntity(serverPlayer);
+        return activeMorphEntity != null ? activeMorphEntity : serverPlayer;
+    }
+
+    private static Consumer<ServerPlayerEntity> doNothing() {
+        return (serverPlayer) -> {
+        };
+    }
+
+    private static double getHeadX(LivingEntity serverPlayer) {
+        return serverPlayer.getX(0.5D) + 0.5D;
+    }
+
+    private static double getHeadY(LivingEntity serverPlayer) {
+        return serverPlayer.getY(0.5D) + 0.5D;
+    }
+
+    private static double getHeadZ(LivingEntity serverPlayer) {
+        return serverPlayer.getX(0.5D) + 0.5D;
+    }
+
     private final Consumer<ServerPlayerEntity> onInitialPress;
     private final Consumer<ServerPlayerEntity> onHeld;
     private final Consumer<ServerPlayerEntity> onRelease;
@@ -73,11 +102,17 @@ public enum KaidoAbility {
             case RELEASE:
                 return this.onRelease;
             default:
-                return serverPlayerEntity -> {};
+                return doNothing();
         }
     }
 
     private static class Constants {
         public static final float FIREBALL_VELOCITY = 1.6F;
+        /**
+         * See <a href="https://www.color-name.com/fire-yellow.color">Fire Yellow</a>
+         */
+        public static final BeamColor BEAM_COLOR = new BeamColor(
+                (short)255, (short)255, (short)255,
+                (short)254, (short)222, (short)23);
     }
 }

@@ -2,18 +2,15 @@ package me.infamous.kanekaido.common.registry;
 
 import me.infamous.kanekaido.KaneKaido;
 import me.infamous.kanekaido.common.entities.DragonKaido;
+import me.infamous.kanekaido.common.entities.EnergyBeam;
 import me.infamous.kanekaido.common.entities.Kaido;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.monster.ZombieEntity;
-import net.minecraft.util.registry.Registry;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
-
-import java.util.function.Supplier;
 
 public class KKEntityTypes {
 
@@ -28,6 +25,14 @@ public class KKEntityTypes {
             EntityType.Builder.of(DragonKaido::new, EntityClassification.MONSTER)
                     .sized(0.6F, 1.95F)
                     .clientTrackingRange(8));
+
+    public static final RegistryObject<EntityType<EnergyBeam>> ENERGY_BEAM = register("energy_beam",
+            EntityType.Builder.<EnergyBeam>of(EnergyBeam::new, EntityClassification.MISC)
+                    .fireImmune()
+                    .setShouldReceiveVelocityUpdates(false)
+                    .sized(2.0F, 1.0F)
+                    .clientTrackingRange(6)
+                    .updateInterval(2));
 
 
     private static <T extends Entity> RegistryObject<EntityType<T>> register(String pKey, EntityType.Builder<T> pBuilder) {

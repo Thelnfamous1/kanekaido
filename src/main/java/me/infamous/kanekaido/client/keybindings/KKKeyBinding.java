@@ -1,9 +1,11 @@
 package me.infamous.kanekaido.client.keybindings;
 
 import me.infamous.kanekaido.common.abilities.KaidoAbility;
+import me.infamous.kanekaido.common.morph.KaidoMorph;
 import me.infamous.kanekaido.common.network.KeyBindAction;
 import me.infamous.kanekaido.common.network.NetworkHandler;
 import me.infamous.kanekaido.common.network.ServerboundAbilityPacket;
+import me.infamous.kanekaido.common.network.ServerboundMorphPacket;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
@@ -59,6 +61,8 @@ public class KKKeyBinding extends KeyBinding{
     public static final int FIREBALL_KEYCODE = GLFW.GLFW_KEY_R;
     public static final int AIR_SLASH_KEYCODE = GLFW.GLFW_KEY_O;
     public static final int ENERGY_BEAM_KEYCODE = GLFW.GLFW_KEY_H;
+    public static final int KAIDO_MORPH_KEYCODE = GLFW.GLFW_KEY_K;
+    public static final int DRAGON_KAIDO_MORPH_KEYCODE = GLFW.GLFW_KEY_L;
 
     public static final String ABILITY_KEY_CATEGORY = "key.kanekaido.categories.abilities";
     public static final String MORPH_KEY_CATEGORY = "key.kanekaido.categories.morph";
@@ -103,6 +107,18 @@ public class KKKeyBinding extends KeyBinding{
                     (clientPlayer) -> NetworkHandler.INSTANCE.sendToServer(new ServerboundAbilityPacket(KeyBindAction.RELEASE, KaidoAbility.ENERGY_BEAM)));
 
 
+    public static final String KAIDO_MORPH_DESCRIPTION_KEY = "key.kanekaido.kaido_morph";
+    public static final KKKeyBinding keyKaidoMorph =
+            new KKKeyBinding(
+                    KAIDO_MORPH_DESCRIPTION_KEY,
+                    KeyConflictContext.IN_GAME,
+                    InputMappings.Type.KEYSYM,
+                    KAIDO_MORPH_KEYCODE,
+                    MORPH_KEY_CATEGORY,
+                    (clientPlayer) -> NetworkHandler.INSTANCE.sendToServer(new ServerboundMorphPacket(KaidoMorph.KAIDO)),
+                    (clientPlayer) -> {},
+                    (clientPlayer) -> {});
+
     public static void handleAllKeys(int key, ClientPlayerEntity clientPlayer) {
         if(key == keyFireball.getKey().getValue()){
             keyFireball.handleKey(clientPlayer);
@@ -112,6 +128,9 @@ public class KKKeyBinding extends KeyBinding{
         }
         if(key == keyEnergyBeam.getKey().getValue()){
             keyEnergyBeam.handleKey(clientPlayer);
+        }
+        if(key == keyKaidoMorph.getKey().getValue()){
+            keyKaidoMorph.handleKey(clientPlayer);
         }
     }
 }

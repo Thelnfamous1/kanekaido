@@ -16,18 +16,18 @@ public class ServerboundAbilityPacket {
         this.ability = ability;
     }
 
-    public static ServerboundAbilityPacket decodePacket(PacketBuffer packetBuffer){
+    public static ServerboundAbilityPacket decode(PacketBuffer packetBuffer){
         KeyBindAction keyBindAction = packetBuffer.readEnum(KeyBindAction.class);
         KaidoAbility ability = packetBuffer.readEnum(KaidoAbility.class);
         return new ServerboundAbilityPacket(keyBindAction, ability);
     }
 
-    public static void encodePacket(ServerboundAbilityPacket packet, PacketBuffer packetBuffer){
+    public static void encode(ServerboundAbilityPacket packet, PacketBuffer packetBuffer){
         packetBuffer.writeEnum(packet.keyBindAction);
         packetBuffer.writeEnum(packet.ability);
     }
 
-    public static void handlePacket(ServerboundAbilityPacket packet, Supplier<NetworkEvent.Context> ctx){
+    public static void handle(ServerboundAbilityPacket packet, Supplier<NetworkEvent.Context> ctx){
         ctx.get().enqueueWork(()->{
             ServerPlayerEntity serverPlayer = ctx.get().getSender();
             if(serverPlayer == null) return;

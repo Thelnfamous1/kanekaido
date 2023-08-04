@@ -25,9 +25,23 @@ public final class NetworkHandler {
         INSTANCE.registerMessage(
                 incrementAndGetPacketCounter(),
                 ServerboundAbilityPacket.class,
-                ServerboundAbilityPacket::encodePacket,
-                ServerboundAbilityPacket::decodePacket,
-                ServerboundAbilityPacket::handlePacket,
+                ServerboundAbilityPacket::encode,
+                ServerboundAbilityPacket::decode,
+                ServerboundAbilityPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        INSTANCE.registerMessage(
+                incrementAndGetPacketCounter(),
+                ServerboundEnergyBeamPacket.class,
+                ServerboundEnergyBeamPacket::encode,
+                ServerboundEnergyBeamPacket::decode,
+                ServerboundEnergyBeamPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        INSTANCE.registerMessage(
+                incrementAndGetPacketCounter(),
+                ServerboundMorphPacket.class,
+                ServerboundMorphPacket::encode,
+                ServerboundMorphPacket::decode,
+                ServerboundMorphPacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER));
     }
 
