@@ -1,6 +1,7 @@
 package me.infamous.kanekaido;
 
 import me.infamous.kanekaido.client.keybindings.KKKeyBinding;
+import me.infamous.kanekaido.client.rendering.DragonKaidoRenderer;
 import me.infamous.kanekaido.client.rendering.EnergyBeamRenderer;
 import me.infamous.kanekaido.client.rendering.KaidoRenderer;
 import me.infamous.kanekaido.common.network.NetworkHandler;
@@ -8,7 +9,6 @@ import me.infamous.kanekaido.common.registry.KKEntityTypes;
 import me.infamous.kanekaido.common.registry.KKItems;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -36,13 +36,13 @@ public class KaneKaido {
 
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
-        ClientRegistry.registerKeyBinding(KKKeyBinding.keyFireball);
-        ClientRegistry.registerKeyBinding(KKKeyBinding.keyAirSlash);
-        ClientRegistry.registerKeyBinding(KKKeyBinding.keyEnergyBeam);
+        KKKeyBinding.registerKeyBindings();
 
         RenderingRegistry.registerEntityRenderingHandler(KKEntityTypes.ENERGY_BEAM.get(), EnergyBeamRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(KKEntityTypes.KAIDO.get(), KaidoRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(KKEntityTypes.DRAGON_KAIDO.get(), DragonKaidoRenderer::new);
 
 
     }
+
 }

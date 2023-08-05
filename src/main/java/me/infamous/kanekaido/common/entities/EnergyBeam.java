@@ -1,5 +1,6 @@
 package me.infamous.kanekaido.common.entities;
 
+import me.ichun.mods.morph.common.morph.MorphHandler;
 import me.infamous.kanekaido.common.logic.BeamColor;
 import me.infamous.kanekaido.common.network.NetworkHandler;
 import me.infamous.kanekaido.common.network.ServerboundEnergyBeamPacket;
@@ -94,7 +95,13 @@ public class EnergyBeam extends Entity implements IEntityAdditionalSpawnData {
             for (LivingEntity entity : entities) {
                 entity.invulnerableTime = 0;
                 Vector3d deltaMovement = entity.getDeltaMovement();
-                entity.hurt(DamageSource.indirectMagic(this.owner, this.owner), BEAM_DAMAGE_PER_TICK);
+                LivingEntity trueOwner = this.owner;
+                UUID uuidOfPlayerForMorph = MorphHandler.INSTANCE.getUuidOfPlayerForMorph(this.owner);
+                if(uuidOfPlayerForMorph != null) {
+                    PlayerEntity player = this.level.getPlayerByUUID(uuidOfPlayerForMorph);
+                    if(player != null) trueOwner = player;
+                }
+                entity.hurt(DamageSource.indirectMagic(trueOwner, trueOwner), BEAM_DAMAGE_PER_TICK);
                 entity.setDeltaMovement(deltaMovement);
             }
         }

@@ -43,6 +43,20 @@ public final class NetworkHandler {
                 ServerboundMorphPacket::decode,
                 ServerboundMorphPacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        INSTANCE.registerMessage(
+                incrementAndGetPacketCounter(),
+                ServerboundSpecialAttackPacket.class,
+                ServerboundSpecialAttackPacket::encode,
+                ServerboundSpecialAttackPacket::decode,
+                ServerboundSpecialAttackPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        INSTANCE.registerMessage(
+                incrementAndGetPacketCounter(),
+                ClientboundSpecialAttackPacket.class,
+                ClientboundSpecialAttackPacket::encode,
+                ClientboundSpecialAttackPacket::decode,
+                ClientboundSpecialAttackPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }
 
     public static int incrementAndGetPacketCounter() {

@@ -1,16 +1,15 @@
 package me.infamous.kanekaido.client.keybindings;
 
 import me.infamous.kanekaido.common.abilities.KaidoAbility;
+import me.infamous.kanekaido.common.abilities.KaidoAttack;
 import me.infamous.kanekaido.common.morph.KaidoMorph;
-import me.infamous.kanekaido.common.network.KeyBindAction;
-import me.infamous.kanekaido.common.network.NetworkHandler;
-import me.infamous.kanekaido.common.network.ServerboundAbilityPacket;
-import me.infamous.kanekaido.common.network.ServerboundMorphPacket;
+import me.infamous.kanekaido.common.network.*;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
 import net.minecraftforge.client.settings.IKeyConflictContext;
 import net.minecraftforge.client.settings.KeyConflictContext;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.function.Consumer;
@@ -39,6 +38,16 @@ public class KKKeyBinding extends KeyBinding{
         this.onInitialRelease = onInitialRelease;
     }
 
+    public static void registerKeyBindings() {
+        ClientRegistry.registerKeyBinding(keyFireball);
+        ClientRegistry.registerKeyBinding(keyAirSlash);
+        ClientRegistry.registerKeyBinding(keyEnergyBeam);
+        ClientRegistry.registerKeyBinding(keyKaidoMorph);
+        ClientRegistry.registerKeyBinding(keyDragonKaidoMorph);
+        ClientRegistry.registerKeyBinding(keyKaidoAttackA);
+        ClientRegistry.registerKeyBinding(keyKaidoAttackB);
+    }
+
     public void handleKey(ClientPlayerEntity clientPlayer){
         if(this.initialPress){
             this.onInitialPress.accept(clientPlayer);
@@ -58,15 +67,17 @@ public class KKKeyBinding extends KeyBinding{
         this.initialRelease = wasDown && !this.isDown();
     }
 
-    public static final int FIREBALL_KEYCODE = GLFW.GLFW_KEY_R;
+    public static final int FIREBALL_KEYCODE = GLFW.GLFW_KEY_I;
     public static final int AIR_SLASH_KEYCODE = GLFW.GLFW_KEY_O;
-    public static final int ENERGY_BEAM_KEYCODE = GLFW.GLFW_KEY_H;
+    public static final int ENERGY_BEAM_KEYCODE = GLFW.GLFW_KEY_P;
     public static final int KAIDO_MORPH_KEYCODE = GLFW.GLFW_KEY_K;
     public static final int DRAGON_KAIDO_MORPH_KEYCODE = GLFW.GLFW_KEY_L;
+    public static final int KAIDO_ATTACK_A_KEYCODE = GLFW.GLFW_KEY_N;
+    public static final int KAIDO_ATTACK_B_KEYCODE = GLFW.GLFW_KEY_M;
 
     public static final String ABILITY_KEY_CATEGORY = "key.kanekaido.categories.abilities";
+    public static final String ATTACK_KEY_CATEGORY = "key.kanekaido.categories.attack";
     public static final String MORPH_KEY_CATEGORY = "key.kanekaido.categories.morph";
-
 
     public static final String FIREBALL_DESCRIPTION_KEY = "key.kanekaido.fireball";
     public static final KKKeyBinding keyFireball =
@@ -119,6 +130,42 @@ public class KKKeyBinding extends KeyBinding{
                     (clientPlayer) -> {},
                     (clientPlayer) -> {});
 
+    public static final String DRAGON_KAIDO_MORPH_DESCRIPTION_KEY = "key.kanekaido.dragon_kaido_morph";
+    public static final KKKeyBinding keyDragonKaidoMorph =
+            new KKKeyBinding(
+                    DRAGON_KAIDO_MORPH_DESCRIPTION_KEY,
+                    KeyConflictContext.IN_GAME,
+                    InputMappings.Type.KEYSYM,
+                    DRAGON_KAIDO_MORPH_KEYCODE,
+                    MORPH_KEY_CATEGORY,
+                    (clientPlayer) -> NetworkHandler.INSTANCE.sendToServer(new ServerboundMorphPacket(KaidoMorph.DRAGON_KAIDO)),
+                    (clientPlayer) -> {},
+                    (clientPlayer) -> {});
+
+    public static final String KAIDO_ATTACK_A_DESCRIPTION_KEY = "key.kanekaido.kaido_attack_a";
+    public static final KKKeyBinding keyKaidoAttackA =
+            new KKKeyBinding(
+                    KAIDO_ATTACK_A_DESCRIPTION_KEY,
+                    KeyConflictContext.IN_GAME,
+                    InputMappings.Type.KEYSYM,
+                    KAIDO_ATTACK_A_KEYCODE,
+                    ATTACK_KEY_CATEGORY,
+                    (clientPlayer) -> NetworkHandler.INSTANCE.sendToServer(new ServerboundSpecialAttackPacket(KaidoAttack.ATTACK_A)),
+                    (clientPlayer) -> {},
+                    (clientPlayer) -> {});
+
+    public static final String KAIDO_ATTACK_B_DESCRIPTION_KEY = "key.kanekaido.kaido_attack_b";
+    public static final KKKeyBinding keyKaidoAttackB =
+            new KKKeyBinding(
+                    KAIDO_ATTACK_B_DESCRIPTION_KEY,
+                    KeyConflictContext.IN_GAME,
+                    InputMappings.Type.KEYSYM,
+                    KAIDO_ATTACK_B_KEYCODE,
+                    ATTACK_KEY_CATEGORY,
+                    (clientPlayer) -> NetworkHandler.INSTANCE.sendToServer(new ServerboundSpecialAttackPacket(KaidoAttack.ATTACK_B)),
+                    (clientPlayer) -> {},
+                    (clientPlayer) -> {});
+
     public static void handleAllKeys(int key, ClientPlayerEntity clientPlayer) {
         if(key == keyFireball.getKey().getValue()){
             keyFireball.handleKey(clientPlayer);
@@ -131,6 +178,15 @@ public class KKKeyBinding extends KeyBinding{
         }
         if(key == keyKaidoMorph.getKey().getValue()){
             keyKaidoMorph.handleKey(clientPlayer);
+        }
+        if(key == keyDragonKaidoMorph.getKey().getValue()){
+            keyDragonKaidoMorph.handleKey(clientPlayer);
+        }
+        if(key == keyKaidoAttackA.getKey().getValue()){
+            keyKaidoAttackA.handleKey(clientPlayer);
+        }
+        if(key == keyKaidoAttackB.getKey().getValue()){
+            keyKaidoAttackB.handleKey(clientPlayer);
         }
     }
 }

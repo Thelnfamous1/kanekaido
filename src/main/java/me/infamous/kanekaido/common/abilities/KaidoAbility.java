@@ -26,7 +26,7 @@ public enum KaidoAbility {
                 double xA = viewVector.x * Constants.FIREBALL_VELOCITY;
                 double yA = viewVector.y * Constants.FIREBALL_VELOCITY;
                 double zA = viewVector.z * Constants.FIREBALL_VELOCITY;
-                FireballEntity fireball = new FireballEntity(world, activeEntity, xA, yA, zA);
+                FireballEntity fireball = new FireballEntity(world, serverPlayer, xA, yA, zA);
                 fireball.getTags().add("kaido");
                 fireball.setPos(activeEntity.getX(), getHeadY(activeEntity), activeEntity.getZ());
                 fireball.shoot(viewVector.x(), viewVector.y(), viewVector.z(), Constants.FIREBALL_VELOCITY, 0.0F);

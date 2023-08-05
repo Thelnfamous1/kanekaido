@@ -18,12 +18,12 @@ public class KKEntityTypes {
 
     public static final RegistryObject<EntityType<Kaido>> KAIDO = register("kaido",
             EntityType.Builder.of(Kaido::new, EntityClassification.MONSTER)
-                    .sized(0.6F, 1.95F)
+                    .sized(3.0F, 7.0F)
                     .clientTrackingRange(8));
 
     public static final RegistryObject<EntityType<DragonKaido>> DRAGON_KAIDO = register("dragon_kaido",
             EntityType.Builder.of(DragonKaido::new, EntityClassification.MONSTER)
-                    .sized(0.6F, 1.95F)
+                    .sized(3.0F, 7.0F)
                     .clientTrackingRange(8));
 
     public static final RegistryObject<EntityType<EnergyBeam>> ENERGY_BEAM = register("energy_beam",
