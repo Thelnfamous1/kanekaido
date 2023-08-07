@@ -1,5 +1,6 @@
 package me.infamous.kanekaido.client.keybindings;
 
+import me.infamous.kanekaido.KaneKaido;
 import me.infamous.kanekaido.common.abilities.KaidoAbility;
 import me.infamous.kanekaido.common.abilities.KaidoAttack;
 import me.infamous.kanekaido.common.morph.KaidoMorph;
@@ -87,9 +88,9 @@ public class KKKeyBinding extends KeyBinding{
                     InputMappings.Type.KEYSYM,
                     FIREBALL_KEYCODE,
                     ABILITY_KEY_CATEGORY,
-                    (clientPlayer) -> NetworkHandler.INSTANCE.sendToServer(new ServerboundAbilityPacket(KeyBindAction.INITIAL_PRESS, KaidoAbility.FIREBALL)),
-                    (clientPlayer) -> NetworkHandler.INSTANCE.sendToServer(new ServerboundAbilityPacket(KeyBindAction.HELD, KaidoAbility.FIREBALL)),
-                    (clientPlayer) -> NetworkHandler.INSTANCE.sendToServer(new ServerboundAbilityPacket(KeyBindAction.RELEASE, KaidoAbility.FIREBALL)));
+                    (clientPlayer) -> sendAbilityPacket(clientPlayer, KeyBindAction.INITIAL_PRESS, KaidoAbility.FIREBALL),
+                    (clientPlayer) -> sendAbilityPacket(clientPlayer, KeyBindAction.HELD, KaidoAbility.FIREBALL),
+                    (clientPlayer) -> sendAbilityPacket(clientPlayer, KeyBindAction.RELEASE, KaidoAbility.FIREBALL));
 
 
     public static final String AIR_SLASH_DESCRIPTION_KEY = "key.kanekaido.air_slash";
@@ -100,9 +101,14 @@ public class KKKeyBinding extends KeyBinding{
                     InputMappings.Type.KEYSYM,
                     AIR_SLASH_KEYCODE,
                     ABILITY_KEY_CATEGORY,
-                    (clientPlayer) -> NetworkHandler.INSTANCE.sendToServer(new ServerboundAbilityPacket(KeyBindAction.INITIAL_PRESS, KaidoAbility.AIR_SLASH)),
-                    (clientPlayer) -> NetworkHandler.INSTANCE.sendToServer(new ServerboundAbilityPacket(KeyBindAction.HELD, KaidoAbility.AIR_SLASH)),
-                    (clientPlayer) -> NetworkHandler.INSTANCE.sendToServer(new ServerboundAbilityPacket(KeyBindAction.RELEASE, KaidoAbility.AIR_SLASH)));
+                    (clientPlayer) -> sendAbilityPacket(clientPlayer, KeyBindAction.INITIAL_PRESS, KaidoAbility.AIR_SLASH),
+                    (clientPlayer) -> sendAbilityPacket(clientPlayer, KeyBindAction.HELD, KaidoAbility.AIR_SLASH),
+                    (clientPlayer) -> sendAbilityPacket(clientPlayer, KeyBindAction.RELEASE, KaidoAbility.AIR_SLASH));
+
+    private static void sendAbilityPacket(ClientPlayerEntity clientPlayer, KeyBindAction initialPress, KaidoAbility airSlash) {
+        if(!clientPlayer.level.getGameRules().getBoolean(KaneKaido.getRuleKaidoAbilities())) return;
+        NetworkHandler.INSTANCE.sendToServer(new ServerboundAbilityPacket(initialPress, airSlash));
+    }
 
 
     public static final String FIRE_BEAM_DESCRIPTION_KEY = "key.kanekaido.fire_beam";
@@ -113,9 +119,9 @@ public class KKKeyBinding extends KeyBinding{
                     InputMappings.Type.KEYSYM,
                     ENERGY_BEAM_KEYCODE,
                     ABILITY_KEY_CATEGORY,
-                    (clientPlayer) -> NetworkHandler.INSTANCE.sendToServer(new ServerboundAbilityPacket(KeyBindAction.INITIAL_PRESS, KaidoAbility.ENERGY_BEAM)),
-                    (clientPlayer) -> NetworkHandler.INSTANCE.sendToServer(new ServerboundAbilityPacket(KeyBindAction.HELD, KaidoAbility.ENERGY_BEAM)),
-                    (clientPlayer) -> NetworkHandler.INSTANCE.sendToServer(new ServerboundAbilityPacket(KeyBindAction.RELEASE, KaidoAbility.ENERGY_BEAM)));
+                    (clientPlayer) -> sendAbilityPacket(clientPlayer, KeyBindAction.INITIAL_PRESS, KaidoAbility.ENERGY_BEAM),
+                    (clientPlayer) -> sendAbilityPacket(clientPlayer, KeyBindAction.HELD, KaidoAbility.ENERGY_BEAM),
+                    (clientPlayer) -> sendAbilityPacket(clientPlayer, KeyBindAction.RELEASE, KaidoAbility.ENERGY_BEAM));
 
 
     public static final String KAIDO_MORPH_DESCRIPTION_KEY = "key.kanekaido.kaido_morph";
@@ -126,9 +132,14 @@ public class KKKeyBinding extends KeyBinding{
                     InputMappings.Type.KEYSYM,
                     KAIDO_MORPH_KEYCODE,
                     MORPH_KEY_CATEGORY,
-                    (clientPlayer) -> NetworkHandler.INSTANCE.sendToServer(new ServerboundMorphPacket(KaidoMorph.KAIDO)),
+                    (clientPlayer) -> sendMorphPacket(clientPlayer, KaidoMorph.KAIDO),
                     (clientPlayer) -> {},
                     (clientPlayer) -> {});
+
+    private static void sendMorphPacket(ClientPlayerEntity clientPlayer, KaidoMorph kaido) {
+        if(!clientPlayer.level.getGameRules().getBoolean(KaneKaido.getRuleKaidoMorphs())) return;
+        NetworkHandler.INSTANCE.sendToServer(new ServerboundMorphPacket(kaido));
+    }
 
     public static final String DRAGON_KAIDO_MORPH_DESCRIPTION_KEY = "key.kanekaido.dragon_kaido_morph";
     public static final KKKeyBinding keyDragonKaidoMorph =
@@ -138,7 +149,7 @@ public class KKKeyBinding extends KeyBinding{
                     InputMappings.Type.KEYSYM,
                     DRAGON_KAIDO_MORPH_KEYCODE,
                     MORPH_KEY_CATEGORY,
-                    (clientPlayer) -> NetworkHandler.INSTANCE.sendToServer(new ServerboundMorphPacket(KaidoMorph.DRAGON_KAIDO)),
+                    (clientPlayer) -> sendMorphPacket(clientPlayer, KaidoMorph.DRAGON_KAIDO),
                     (clientPlayer) -> {},
                     (clientPlayer) -> {});
 

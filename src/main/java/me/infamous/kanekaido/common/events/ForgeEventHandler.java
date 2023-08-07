@@ -2,9 +2,11 @@ package me.infamous.kanekaido.common.events;
 
 import me.ichun.mods.morph.common.morph.MorphHandler;
 import me.infamous.kanekaido.KaneKaido;
+import me.infamous.kanekaido.common.command.KaidoToggleCommand;
 import me.infamous.kanekaido.common.entities.Kaido;
 import me.infamous.kanekaido.common.registry.KKEntityTypes;
 import net.minecraft.entity.LivingEntity;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
@@ -26,6 +28,11 @@ public class ForgeEventHandler {
                 ((Kaido)activeMorphEntity).tickDownAttackTimers();
             }
         }
+    }
+
+    @SubscribeEvent
+    static void onRegisterCommands(RegisterCommandsEvent event){
+        //KaidoToggleCommand.register(event.getDispatcher());
     }
 
 }

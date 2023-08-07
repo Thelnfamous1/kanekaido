@@ -1,6 +1,7 @@
 package me.infamous.kanekaido.common.network;
 
 import me.ichun.mods.morph.common.morph.MorphHandler;
+import me.infamous.kanekaido.KaneKaido;
 import me.infamous.kanekaido.common.morph.KaidoMorph;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -29,6 +30,7 @@ public class ServerboundMorphPacket {
         ctx.get().enqueueWork(()->{
             ServerPlayerEntity serverPlayer = ctx.get().getSender();
             if(serverPlayer == null) return;
+            if(!serverPlayer.level.getGameRules().getBoolean(KaneKaido.getRuleKaidoMorphs())) return;
             World world = serverPlayer.level;
 
             KaidoMorph morph = packet.getMorph();

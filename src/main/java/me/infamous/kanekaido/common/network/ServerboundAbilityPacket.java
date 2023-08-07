@@ -1,5 +1,6 @@
 package me.infamous.kanekaido.common.network;
 
+import me.infamous.kanekaido.KaneKaido;
 import me.infamous.kanekaido.common.abilities.KaidoAbility;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -31,6 +32,7 @@ public class ServerboundAbilityPacket {
         ctx.get().enqueueWork(()->{
             ServerPlayerEntity serverPlayer = ctx.get().getSender();
             if(serverPlayer == null) return;
+            if(!serverPlayer.level.getGameRules().getBoolean(KaneKaido.getRuleKaidoAbilities())) return;
 
 
             KaidoAbility ability = packet.getAbility();
