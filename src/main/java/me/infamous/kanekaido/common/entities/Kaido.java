@@ -1,20 +1,14 @@
 package me.infamous.kanekaido.common.entities;
 
-import me.ichun.mods.morph.common.morph.MorphHandler;
-import me.infamous.kanekaido.KaneKaido;
+import me.infamous.kanekaido.common.logic.Util;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.item.ArmorStandEntity;
 import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -23,8 +17,6 @@ import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
-
-import java.util.UUID;
 
 public class Kaido extends CreatureEntity implements IAnimatable {
     public static final int ATTACK_A_LENGTH = 36;
@@ -83,39 +75,14 @@ public class Kaido extends CreatureEntity implements IAnimatable {
         super.aiStep();
         if(!this.level.isClientSide){
             if (this.getAttackATimer() == ATTACK_A_LENGTH - ATTACK_A_POINT) {
-                KaneKaido.LOGGER.info("Creating Attack A damage for {}", this);
-                this.areaOfEffectAttack();
+                float width = this.getBbWidth();
+                Util.areaOfEffectAttack(width, width, this, Util.AOE_KNOCKBACK_SCALE, Util.AOE_DAMAGE_SCALE);
             }
             if (this.getAttackBTimer() == ATTACK_B_LENGTH - ATTACK_B_POINT) {
-                this.areaOfEffectAttack();
+                float width = this.getBbWidth();
+                Util.areaOfEffectAttack(width, width, this, Util.AOE_KNOCKBACK_SCALE, Util.AOE_DAMAGE_SCALE);
             }
         }
-    }
-
-    private void areaOfEffectAttack(){
-        float baseDamage = (float)this.getAttributeValue(Attributes.ATTACK_DAMAGE);
-        float knockback = (float)this.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
-        double xShift = (-MathHelper.sin(this.yBodyRot * ((float)Math.PI / 180F))) * 3.0D;
-        double zShift = MathHelper.cos(this.yBodyRot * ((float)Math.PI  / 180F)) * 3.0D;
-        for(LivingEntity target : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().move(xShift, 0.0D, zShift).inflate(3.0D, 0.25D, 3.0D))) {
-            if (target != this && !this.isAlliedTo(target) && (!(target instanceof ArmorStandEntity) || !((ArmorStandEntity) target).isMarker())) {
-                target.knockback(knockback * 0.5F, MathHelper.sin(this.yRot * ((float)Math.PI / 180F)), -MathHelper.cos(this.yRot * ((float)Math.PI / 180F)));
-                DamageSource pSource = this.getMorphDamageSource();
-                target.hurt(pSource, baseDamage * 2.0F);
-            }
-        }
-    }
-
-    private DamageSource getMorphDamageSource() {
-        UUID uuidOfPlayerForMorph = MorphHandler.INSTANCE.getUuidOfPlayerForMorph(this);
-        DamageSource pSource;
-        if(uuidOfPlayerForMorph != null){
-            PlayerEntity player = this.level.getPlayerByUUID(uuidOfPlayerForMorph);
-            pSource = DamageSource.playerAttack(player);
-        } else{
-            pSource = DamageSource.mobAttack(this);
-        }
-        return pSource;
     }
 
     public boolean isAttacking(){

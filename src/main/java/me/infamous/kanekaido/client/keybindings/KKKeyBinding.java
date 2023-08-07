@@ -71,8 +71,8 @@ public class KKKeyBinding extends KeyBinding{
     public static final int FIREBALL_KEYCODE = GLFW.GLFW_KEY_I;
     public static final int AIR_SLASH_KEYCODE = GLFW.GLFW_KEY_O;
     public static final int ENERGY_BEAM_KEYCODE = GLFW.GLFW_KEY_P;
-    public static final int KAIDO_MORPH_KEYCODE = GLFW.GLFW_KEY_K;
-    public static final int DRAGON_KAIDO_MORPH_KEYCODE = GLFW.GLFW_KEY_L;
+    public static final int KAIDO_MORPH_KEYCODE = GLFW.GLFW_KEY_J;
+    public static final int DRAGON_KAIDO_MORPH_KEYCODE = GLFW.GLFW_KEY_K;
     public static final int KAIDO_ATTACK_A_KEYCODE = GLFW.GLFW_KEY_N;
     public static final int KAIDO_ATTACK_B_KEYCODE = GLFW.GLFW_KEY_M;
 

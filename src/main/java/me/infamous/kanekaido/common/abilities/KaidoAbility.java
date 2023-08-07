@@ -3,6 +3,7 @@ package me.infamous.kanekaido.common.abilities;
 import me.ichun.mods.morph.common.morph.MorphHandler;
 import me.infamous.kanekaido.common.entities.EnergyBeam;
 import me.infamous.kanekaido.common.logic.BeamColor;
+import me.infamous.kanekaido.common.logic.Util;
 import me.infamous.kanekaido.common.network.KeyBindAction;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -38,7 +39,11 @@ public enum KaidoAbility {
     ),
 
     AIR_SLASH(
-            doNothing(),
+            serverPlayer -> {
+                LivingEntity activeEntity = getActiveEntity(serverPlayer);
+                float width = activeEntity.getBbWidth();
+                Util.areaOfEffectAttack(width, width, activeEntity, Util.AOE_KNOCKBACK_SCALE, Util.AOE_DAMAGE_SCALE);
+            },
             doNothing(),
             doNothing()
     ),
@@ -76,7 +81,7 @@ public enum KaidoAbility {
     }
 
     private static double getHeadY(LivingEntity serverPlayer) {
-        return serverPlayer.getY(0.5D) + 0.5D;
+        return serverPlayer.getEyeY();
     }
 
     private static double getHeadZ(LivingEntity serverPlayer) {
