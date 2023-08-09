@@ -1969,6 +1969,51 @@
           }
         }
       }
+    },
+    "kaidohybrid_idle": {
+      "loop": true,
+      "bones": {
+        "armleft": {
+          "rotation": {
+            "vector": [0, 0, 80]
+          }
+        },
+        "mantel": {
+          "rotation": {
+            "vector": [22.5, 0, 0]
+          }
+        },
+        "armright": {
+          "rotation": {
+            "vector": [0, 0, -80]
+          }
+        },
+        "tail": {
+          "rotation": {
+            "vector": [-50, 0, 0]
+          }
+        },
+        "tail1": {
+          "rotation": {
+            "vector": [20, 0, 0]
+          }
+        },
+        "tail2": {
+          "rotation": {
+            "vector": [20, 0, 0]
+          }
+        },
+        "tail3": {
+          "rotation": {
+            "vector": [20, 0, 0]
+          }
+        },
+        "tail4": {
+          "rotation": {
+            "vector": [10, 0, 0]
+          }
+        }
+      }
     }
   }
 }

@@ -9,6 +9,8 @@ import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.particles.ParticleTypes;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -76,11 +78,11 @@ public class Kaido extends CreatureEntity implements IAnimatable {
         if(!this.level.isClientSide){
             if (this.getAttackATimer() == ATTACK_A_LENGTH - ATTACK_A_POINT) {
                 float width = this.getBbWidth();
-                Util.areaOfEffectAttack(width, width, this, Util.AOE_KNOCKBACK_SCALE, Util.AOE_DAMAGE_SCALE);
+                Util.areaOfEffectAttack(width, width, this, Util.AOE_KNOCKBACK_SCALE, Util.AOE_DAMAGE_SCALE, ParticleTypes.EXPLOSION, SoundEvents.GENERIC_EXPLODE, 1);
             }
             if (this.getAttackBTimer() == ATTACK_B_LENGTH - ATTACK_B_POINT) {
                 float width = this.getBbWidth();
-                Util.areaOfEffectAttack(width, width, this, Util.AOE_KNOCKBACK_SCALE, Util.AOE_DAMAGE_SCALE);
+                Util.areaOfEffectAttack(width, width, this, Util.AOE_KNOCKBACK_SCALE, Util.AOE_DAMAGE_SCALE, ParticleTypes.EXPLOSION, SoundEvents.GENERIC_EXPLODE, 1);
             }
         }
     }
@@ -118,8 +120,7 @@ public class Kaido extends CreatureEntity implements IAnimatable {
         } else if (event.isMoving()) {
             event.getController().setAnimation(new AnimationBuilder().addAnimation("kaidohybrid_walk", true));
         } else{
-            event.getController().clearAnimationCache();
-            return PlayState.STOP;
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("kaidohybrid_idle", true));
         }
         return PlayState.CONTINUE;
     }

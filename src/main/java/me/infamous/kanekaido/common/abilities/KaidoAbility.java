@@ -9,6 +9,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.FireballEntity;
+import net.minecraft.particles.ParticleTypes;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
@@ -24,15 +27,15 @@ public enum KaidoAbility {
 
                 Vector3d viewVector = activeEntity.getViewVector(1.0F);
 
-                double xA = viewVector.x * Constants.FIREBALL_VELOCITY;
-                double yA = viewVector.y * Constants.FIREBALL_VELOCITY;
-                double zA = viewVector.z * Constants.FIREBALL_VELOCITY;
+                double xA = viewVector.x * KaidoConstants.FIREBALL_VELOCITY;
+                double yA = viewVector.y * KaidoConstants.FIREBALL_VELOCITY;
+                double zA = viewVector.z * KaidoConstants.FIREBALL_VELOCITY;
                 FireballEntity fireball = new FireballEntity(world, serverPlayer, xA, yA, zA);
-                fireball.getTags().add("kaido");
                 fireball.setPos(activeEntity.getX(), getHeadY(activeEntity), activeEntity.getZ());
-                fireball.shoot(viewVector.x(), viewVector.y(), viewVector.z(), Constants.FIREBALL_VELOCITY, 0.0F);
-                fireball.explosionPower = 1;
+                fireball.shoot(viewVector.x(), viewVector.y(), viewVector.z(), KaidoConstants.FIREBALL_VELOCITY, 0.0F);
+                fireball.explosionPower = KaidoConstants.FIREBALL_EXPLOSION_POWER;
                 world.addFreshEntity(fireball);
+                activeEntity.level.playSound(null, activeEntity.blockPosition(), SoundEvents.GHAST_SHOOT, SoundCategory.PLAYERS, 10.0F, (activeEntity.getRandom().nextFloat() - activeEntity.getRandom().nextFloat()) * 0.2F + 1.0F);
             },
             doNothing(),
             doNothing()
@@ -42,7 +45,7 @@ public enum KaidoAbility {
             serverPlayer -> {
                 LivingEntity activeEntity = getActiveEntity(serverPlayer);
                 float width = activeEntity.getBbWidth();
-                Util.areaOfEffectAttack(width, width, activeEntity, Util.AOE_KNOCKBACK_SCALE, Util.AOE_DAMAGE_SCALE);
+                Util.areaOfEffectAttack(width, width, activeEntity, Util.AOE_KNOCKBACK_SCALE, Util.AOE_DAMAGE_SCALE, ParticleTypes.SWEEP_ATTACK, SoundEvents.PLAYER_ATTACK_SWEEP, Util.AOE_SWEEP_PARTICLE_COUNT);
             },
             doNothing(),
             doNothing()
@@ -53,9 +56,10 @@ public enum KaidoAbility {
                 LivingEntity activeEntity = getActiveEntity(serverPlayer);
                 World worldIn = activeEntity.level;
 
-                EnergyBeam energyBeam = new EnergyBeam(Constants.BEAM_COLOR, worldIn, activeEntity);
+                EnergyBeam energyBeam = new EnergyBeam(KaidoConstants.BEAM_COLOR, worldIn, activeEntity);
                 energyBeam.moveTo(getHeadX(activeEntity), getHeadY(activeEntity), getHeadZ(activeEntity), activeEntity.yRot, activeEntity.xRot);
                 energyBeam.setOwner(activeEntity);
+                energyBeam.setBeamWidth(KaidoConstants.ENERGY_BEAM_WIDTH);
                 worldIn.addFreshEntity(energyBeam);
     },
             doNothing(),
@@ -111,7 +115,7 @@ public enum KaidoAbility {
         }
     }
 
-    private static class Constants {
+    private static class KaidoConstants {
         public static final float FIREBALL_VELOCITY = 1.6F;
         /**
          * See <a href="https://www.color-name.com/fire-yellow.color">Fire Yellow</a>
@@ -119,5 +123,7 @@ public enum KaidoAbility {
         public static final BeamColor BEAM_COLOR = new BeamColor(
                 (short)255, (short)255, (short)255,
                 (short)254, (short)222, (short)23);
+        public static final int FIREBALL_EXPLOSION_POWER = 3;
+        public static final float ENERGY_BEAM_WIDTH = 0.5F;
     }
 }

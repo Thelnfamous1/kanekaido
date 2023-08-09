@@ -12,9 +12,14 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
@@ -26,12 +31,13 @@ import java.util.Set;
 import java.util.UUID;
 
 public class EnergyBeam extends Entity implements IEntityAdditionalSpawnData {
+    private static final DataParameter<Float> BEAM_WIDTH = EntityDataManager.defineId(EnergyBeam.class, DataSerializers.FLOAT);
     public static final double MAX_RAYTRACE_DISTANCE = 256;
     public static final float BEAM_DAMAGE_PER_TICK = 0.5F; // 10.0F damage per second
     private LivingEntity owner;
     private UUID ownerUUID;
     private BeamColor beamColor;
-    private float beamWidth = 0.2f;
+    private int explosionRadius = 3;
 
 
     public EnergyBeam(EntityType<?> type, World world) {
@@ -78,10 +84,14 @@ public class EnergyBeam extends Entity implements IEntityAdditionalSpawnData {
             updatePositionAndRotation();
         }
 
+
+        RayTraceResult rayTraceResult = beamTraceResult(MAX_RAYTRACE_DISTANCE, 1.0f, false);
+        Vector3d location = rayTraceResult.getLocation();
+
         if(!this.level.isClientSide()){
             Set<LivingEntity> entities = new HashSet<>();
-            AxisAlignedBB searchBox = new AxisAlignedBB(this.position(), this.position()).inflate(this.beamWidth);
-            double distanceToDestination = beamTraceDistance(MAX_RAYTRACE_DISTANCE, 1.0f, false);
+            AxisAlignedBB searchBox = new AxisAlignedBB(this.position(), this.position()).inflate(this.getBeamWidth());
+            double distanceToDestination = beamTraceDistance(rayTraceResult);
             double distanceTraveled = 0;
             while (!(this.position().distanceTo(searchBox.getCenter()) > distanceToDestination)
                     && !(this.position().distanceTo(searchBox.getCenter()) > MAX_RAYTRACE_DISTANCE)) {
@@ -92,17 +102,38 @@ public class EnergyBeam extends Entity implements IEntityAdditionalSpawnData {
                 Vector3d targetVector = this.position().add(viewVector.x * distanceTraveled, viewVector.y * distanceTraveled, viewVector.z * distanceTraveled);
                 searchBox = new AxisAlignedBB(targetVector, targetVector).inflate(1.0D);
             }
-            for (LivingEntity entity : entities) {
-                entity.invulnerableTime = 0;
-                Vector3d deltaMovement = entity.getDeltaMovement();
+            for (LivingEntity target : entities) {
+                target.invulnerableTime = 0;
+                Vector3d deltaMovement = target.getDeltaMovement();
+                // TODO: Morph-specific check may not be necessary as the damage source entity is now said to be this energy beam
                 LivingEntity trueOwner = this.owner;
                 UUID uuidOfPlayerForMorph = MorphHandler.INSTANCE.getUuidOfPlayerForMorph(this.owner);
                 if(uuidOfPlayerForMorph != null) {
                     PlayerEntity player = this.level.getPlayerByUUID(uuidOfPlayerForMorph);
                     if(player != null) trueOwner = player;
                 }
-                entity.hurt(DamageSource.indirectMagic(trueOwner, trueOwner), BEAM_DAMAGE_PER_TICK);
-                entity.setDeltaMovement(deltaMovement);
+                target.hurt(DamageSource.indirectMagic(this, trueOwner), BEAM_DAMAGE_PER_TICK);
+                target.setDeltaMovement(deltaMovement);
+                target.invulnerableTime = 0;
+            }
+            if(this.tickCount % 20 == 0){
+                float power = 1.0F;
+                this.level.explode(this, location.x, location.y, location.z, (float)this.explosionRadius * power, Explosion.Mode.DESTROY);
+            }
+        } else{
+            double scale = 1.0F;
+            double particleX =  location.x - this.getX();
+            double particleY = location.y - this.getY(0.5D);
+            double particleZ = location.z - this.getZ();
+            double distance = Math.sqrt(particleX * particleX + particleY * particleY + particleZ * particleZ);
+            particleX = particleX / distance;
+            particleY = particleY / distance;
+            particleZ = particleZ / distance;
+            double shift = this.random.nextDouble();
+
+            while(shift < distance) {
+                shift += 1.8D - scale + this.random.nextDouble() * (1.7D - scale);
+                this.level.addParticle(ParticleTypes.FLAME, this.getX() + particleX * shift, this.getEyeY() + particleY * shift, this.getZ() + particleZ * shift, 0.0D, 0.0D, 0.0D);
             }
         }
     }
@@ -128,11 +159,11 @@ public class EnergyBeam extends Entity implements IEntityAdditionalSpawnData {
     }
 
     public float getBeamWidth() {
-        return this.beamWidth;
+        return this.entityData.get(BEAM_WIDTH);
     }
 
     public void setBeamWidth(float beamWidth){
-        this.beamWidth = beamWidth;
+        this.entityData.set(BEAM_WIDTH, beamWidth);
     }
 
     public final Vector3d getWorldPosition(float partialTicks) {
@@ -149,8 +180,7 @@ public class EnergyBeam extends Entity implements IEntityAdditionalSpawnData {
         return level.clip(new RayTraceContext(vector3d, vector3d2, RayTraceContext.BlockMode.COLLIDER, passesWater ? RayTraceContext.FluidMode.ANY : RayTraceContext.FluidMode.NONE, this));
     }
 
-    public double beamTraceDistance(double distance, float ticks, boolean passesWater) {
-        RayTraceResult rayTraceResult = beamTraceResult(distance, ticks, passesWater);
+    public double beamTraceDistance(RayTraceResult rayTraceResult) {
         double distanceToDestination = MAX_RAYTRACE_DISTANCE;
         if(rayTraceResult instanceof BlockRayTraceResult) {
             BlockPos collision = ((BlockRayTraceResult) rayTraceResult).getBlockPos();
@@ -177,7 +207,7 @@ public class EnergyBeam extends Entity implements IEntityAdditionalSpawnData {
 
     @Override
     protected void defineSynchedData() {
-
+        this.entityData.define(BEAM_WIDTH, 0.2F);
     }
 
     @Override

@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.Mod;
 public class ForgeClientEventHandler {
 
     @SubscribeEvent
-    public static void onKeyInput(InputEvent.KeyInputEvent event){
+    static void onKeyInput(InputEvent.KeyInputEvent event){
         Minecraft minecraft = Minecraft.getInstance();
         ClientPlayerEntity clientPlayer = minecraft.player;
         if(clientPlayer != null){

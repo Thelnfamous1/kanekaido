@@ -32,7 +32,7 @@ public class EnergyBeamRenderer<T extends EnergyBeam> extends EntityRenderer<T> 
 
     @Override
     public void render(T energyBeam, float pEntityYaw, float pPartialTicks, MatrixStack pMatrixStack, IRenderTypeBuffer pBuffer, int pPackedLight) {
-        double distance = energyBeam.beamTraceDistance(EnergyBeam.MAX_RAYTRACE_DISTANCE, 1.0F, false);
+        double distance = energyBeam.beamTraceDistance(energyBeam.beamTraceResult(EnergyBeam.MAX_RAYTRACE_DISTANCE, 1.0F, false));
 
         drawBeams(distance, energyBeam, pPartialTicks, SPEED_MODIFIER, pMatrixStack);
     }
