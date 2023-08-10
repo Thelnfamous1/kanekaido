@@ -4,8 +4,11 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "${mod_id}.refmap.json",
   "mixins": [
-    "DamageProjectileEntityMixin"
+    "DamageProjectileEntityMixin",
+    "EntityAccess"
   ],
-  "client": [],
+  "client": [
+    "ActiveRenderInfoAccess"
+  ],
   "minVersion": "0.8"
 }

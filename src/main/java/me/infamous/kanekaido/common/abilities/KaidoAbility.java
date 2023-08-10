@@ -2,9 +2,9 @@ package me.infamous.kanekaido.common.abilities;
 
 import me.ichun.mods.morph.common.morph.MorphHandler;
 import me.infamous.kanekaido.common.entities.EnergyBeam;
-import me.infamous.kanekaido.common.logic.BeamColor;
-import me.infamous.kanekaido.common.logic.Util;
+import me.infamous.kanekaido.common.logic.KaidoUtil;
 import me.infamous.kanekaido.common.network.KeyBindAction;
+import me.infamous.kanekaido.mixin.EntityAccess;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -12,7 +12,9 @@ import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -26,17 +28,46 @@ public enum KaidoAbility {
                 World world = activeEntity.level;
 
                 Vector3d viewVector = activeEntity.getViewVector(1.0F);
+                for(int i = 0; i < 5; i++){
+                    float angle = 0.0F;
+                    boolean vertical = false;
+                    switch (i){
+                        case 1: {
+                            angle = 10.0F;
+                            break;
+                        }
+                        case 2: {
+                            angle = -10.0F;
+                            break;
+                        }
+                        case 3: {
+                            angle = 10.0F;
+                            vertical = true;
+                            break;
+                        }
+                        case 4: {
+                            angle = -10.0F;
+                            vertical = true;
+                            break;
+                        }
+                    }
+                    Vector3d directionVector = vertical ? getSidewaysVector(activeEntity, 1.0F) : activeEntity.getUpVector(1.0F);
+                    Quaternion upVectorQ = new Quaternion(new Vector3f(directionVector), angle, true);
+                    Vector3f shotVector = new Vector3f(viewVector);
+                    shotVector.transform(upVectorQ);
 
-                double xA = viewVector.x * KaidoConstants.FIREBALL_VELOCITY;
-                double yA = viewVector.y * KaidoConstants.FIREBALL_VELOCITY;
-                double zA = viewVector.z * KaidoConstants.FIREBALL_VELOCITY;
-                FireballEntity fireball = new FireballEntity(world, serverPlayer, xA, yA, zA);
-                fireball.getTags().add(KaidoConstants.FIREBALL_TAG);
-                fireball.setPos(activeEntity.getX(), getHeadY(activeEntity), activeEntity.getZ());
-                fireball.shoot(viewVector.x(), viewVector.y(), viewVector.z(), KaidoConstants.FIREBALL_VELOCITY, 0.0F);
-                fireball.explosionPower = KaidoConstants.FIREBALL_EXPLOSION_POWER;
-                world.addFreshEntity(fireball);
-                activeEntity.level.playSound(null, activeEntity.blockPosition(), SoundEvents.GHAST_SHOOT, SoundCategory.PLAYERS, 10.0F, (activeEntity.getRandom().nextFloat() - activeEntity.getRandom().nextFloat()) * 0.2F + 1.0F);
+                    double xA = shotVector.x() * KaidoUtil.FIREBALL_VELOCITY;
+                    double yA = shotVector.y() * KaidoUtil.FIREBALL_VELOCITY;
+                    double zA = shotVector.z() * KaidoUtil.FIREBALL_VELOCITY;
+
+                    FireballEntity fireball = new FireballEntity(world, serverPlayer, xA, yA, zA);
+                    fireball.getTags().add(KaidoUtil.FIREBALL_TAG);
+                    fireball.setPos(activeEntity.getX(), getHeadY(activeEntity), activeEntity.getZ());
+                    fireball.shoot(shotVector.x(), shotVector.y(), shotVector.z(), KaidoUtil.FIREBALL_VELOCITY, 0.0F);
+                    fireball.explosionPower = KaidoUtil.FIREBALL_EXPLOSION_POWER;
+                    world.addFreshEntity(fireball);
+                    activeEntity.level.playSound(null, activeEntity.blockPosition(), SoundEvents.GHAST_SHOOT, SoundCategory.PLAYERS, 10.0F, (activeEntity.getRandom().nextFloat() - activeEntity.getRandom().nextFloat()) * 0.2F + 1.0F);
+                }
             },
             doNothing(),
             doNothing()
@@ -46,7 +77,7 @@ public enum KaidoAbility {
             serverPlayer -> {
                 LivingEntity activeEntity = getActiveEntity(serverPlayer);
                 float width = activeEntity.getBbWidth();
-                Util.areaOfEffectAttack(width, width, activeEntity, Util.AOE_KNOCKBACK_SCALE, Util.AOE_DAMAGE_SCALE, ParticleTypes.SWEEP_ATTACK, SoundEvents.PLAYER_ATTACK_SWEEP, Util.AOE_SWEEP_PARTICLE_COUNT);
+                KaidoUtil.areaOfEffectAttack(width, width, activeEntity, KaidoUtil.AOE_KNOCKBACK_SCALE, KaidoUtil.AOE_DAMAGE_SCALE, ParticleTypes.SWEEP_ATTACK, SoundEvents.PLAYER_ATTACK_SWEEP, KaidoUtil.AOE_SWEEP_PARTICLE_COUNT, KaidoUtil.AIR_SLASH_Y_SHIFT);
             },
             doNothing(),
             doNothing()
@@ -57,10 +88,10 @@ public enum KaidoAbility {
                 LivingEntity activeEntity = getActiveEntity(serverPlayer);
                 World worldIn = activeEntity.level;
 
-                EnergyBeam energyBeam = new EnergyBeam(KaidoConstants.BEAM_COLOR, worldIn, activeEntity);
+                EnergyBeam energyBeam = new EnergyBeam(KaidoUtil.BEAM_COLOR, worldIn, activeEntity);
                 energyBeam.moveTo(getHeadX(activeEntity), getHeadY(activeEntity), getHeadZ(activeEntity), activeEntity.yRot, activeEntity.xRot);
                 energyBeam.setOwner(activeEntity);
-                energyBeam.setBeamWidth(KaidoConstants.ENERGY_BEAM_WIDTH);
+                energyBeam.setBeamWidth(KaidoUtil.ENERGY_BEAM_WIDTH);
                 worldIn.addFreshEntity(energyBeam);
     },
             doNothing(),
@@ -70,6 +101,10 @@ public enum KaidoAbility {
                 beams.forEach(Entity::remove);
     }
     );
+
+    private static Vector3d getSidewaysVector(LivingEntity entity, float partialTicks) {
+        return ((EntityAccess)entity).callCalculateViewVector(entity.getViewXRot(partialTicks), entity.getViewYRot(partialTicks) - 90.0F);
+    }
 
     private static LivingEntity getActiveEntity(ServerPlayerEntity serverPlayer) {
         LivingEntity activeMorphEntity = MorphHandler.INSTANCE.getActiveMorphEntity(serverPlayer);
@@ -114,19 +149,6 @@ public enum KaidoAbility {
             default:
                 return doNothing();
         }
-    }
-
-    public static class KaidoConstants {
-        public static final float FIREBALL_VELOCITY = 1.6F;
-        /**
-         * See <a href="https://www.color-name.com/fire-yellow.color">Fire Yellow</a>
-         */
-        public static final BeamColor BEAM_COLOR = new BeamColor(
-                (short)255, (short)255, (short)255,
-                (short)254, (short)222, (short)23);
-        public static final int FIREBALL_EXPLOSION_POWER = 3;
-        public static final float ENERGY_BEAM_WIDTH = 0.5F;
-        public static final String FIREBALL_TAG = "kanekaido";
     }
 
 }

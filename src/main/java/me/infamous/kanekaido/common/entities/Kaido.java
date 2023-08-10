@@ -1,6 +1,6 @@
 package me.infamous.kanekaido.common.entities;
 
-import me.infamous.kanekaido.common.logic.Util;
+import me.infamous.kanekaido.common.logic.KaidoUtil;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
@@ -78,11 +78,11 @@ public class Kaido extends CreatureEntity implements IAnimatable {
         if(!this.level.isClientSide){
             if (this.getAttackATimer() == ATTACK_A_LENGTH - ATTACK_A_POINT) {
                 float width = this.getBbWidth();
-                Util.areaOfEffectAttack(width, width, this, Util.AOE_KNOCKBACK_SCALE, Util.AOE_DAMAGE_SCALE, ParticleTypes.EXPLOSION, SoundEvents.GENERIC_EXPLODE, 1);
+                KaidoUtil.areaOfEffectAttack(width, width, this, KaidoUtil.AOE_KNOCKBACK_SCALE, KaidoUtil.AOE_DAMAGE_SCALE, ParticleTypes.EXPLOSION, SoundEvents.GENERIC_EXPLODE, 1, 0.0F);
             }
             if (this.getAttackBTimer() == ATTACK_B_LENGTH - ATTACK_B_POINT) {
                 float width = this.getBbWidth();
-                Util.areaOfEffectAttack(width, width, this, Util.AOE_KNOCKBACK_SCALE, Util.AOE_DAMAGE_SCALE, ParticleTypes.EXPLOSION, SoundEvents.GENERIC_EXPLODE, 1);
+                KaidoUtil.areaOfEffectAttack(width, width, this, KaidoUtil.AOE_KNOCKBACK_SCALE, KaidoUtil.AOE_DAMAGE_SCALE, ParticleTypes.EXPLOSION, SoundEvents.GENERIC_EXPLODE, 1, 0.0F);
             }
         }
     }

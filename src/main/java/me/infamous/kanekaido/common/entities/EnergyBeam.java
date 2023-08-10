@@ -116,11 +116,13 @@ public class EnergyBeam extends Entity implements IEntityAdditionalSpawnData {
                 target.setDeltaMovement(deltaMovement);
                 target.invulnerableTime = 0;
             }
-            if(this.tickCount % 20 == 0){
+            if(this.tickCount % 10 == 0){
                 float power = 1.0F;
                 this.level.explode(this, location.x, location.y, location.z, (float)this.explosionRadius * power, Explosion.Mode.DESTROY);
             }
-        } else{
+        }
+        /*
+        else{
             double scale = 1.0F;
             double particleX =  location.x - this.getX();
             double particleY = location.y - this.getY(0.5D);
@@ -136,6 +138,7 @@ public class EnergyBeam extends Entity implements IEntityAdditionalSpawnData {
                 this.level.addParticle(ParticleTypes.FLAME, this.getX() + particleX * shift, this.getEyeY() + particleY * shift, this.getZ() + particleZ * shift, 0.0D, 0.0D, 0.0D);
             }
         }
+         */
     }
 
     public void updatePositionAndRotation() {

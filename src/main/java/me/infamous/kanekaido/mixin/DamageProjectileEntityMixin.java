@@ -1,6 +1,6 @@
 package me.infamous.kanekaido.mixin;
 
-import me.infamous.kanekaido.common.abilities.KaidoAbility;
+import me.infamous.kanekaido.common.logic.KaidoUtil;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.DamagingProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -22,7 +22,7 @@ public abstract class DamageProjectileEntityMixin extends ProjectileEntity {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;addParticle(Lnet/minecraft/particles/IParticleData;DDDDDD)V", shift = At.Shift.AFTER, ordinal = 1), method = "tick")
     private void kaidoParticle(CallbackInfo ci){
-        if(this.getTags().contains(KaidoAbility.KaidoConstants.FIREBALL_TAG) && !this.level.isClientSide){
+        if(this.getTags().contains(KaidoUtil.FIREBALL_TAG) && !this.level.isClientSide){
             Vector3d vector3d = this.getDeltaMovement();
             double d0 = this.getX() + vector3d.x;
             double d1 = this.getY() + vector3d.y;
