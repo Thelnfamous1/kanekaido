@@ -17,11 +17,17 @@ public class DragonKaidoRenderer extends GeoEntityRenderer<DragonKaido> {
 
 	@Override
 	public void renderEarly(DragonKaido animatable, MatrixStack stackIn, float ticks, IRenderTypeBuffer renderTypeBuffer, IVertexBuilder vertexBuilder, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float partialTicks) {
-		stackIn.pushPose();
+		//stackIn.pushPose();
 		boolean isMoving = this.isMoving(animatable, partialTicks);
-		stackIn.translate(0.0F, isMoving ? -66.0F : -223.0F, isMoving ? 364.0F : 286.0F);
+		stackIn.translate(0.0F, isMoving ? -66.0F / 16.0F : -223.0F / 16.0F, isMoving ? 364.0F / 16.0F : 286.0F / 16.0F);
 		super.renderEarly(animatable, stackIn, ticks, renderTypeBuffer, vertexBuilder, packedLightIn, packedOverlayIn, red, green, blue, partialTicks);
-		stackIn.popPose();
+		//stackIn.popPose();
+	}
+
+	@Override
+	public void renderLate(DragonKaido animatable, MatrixStack stackIn, float partialTicks, IRenderTypeBuffer renderTypeBuffer, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
+		super.renderLate(animatable, stackIn, partialTicks, renderTypeBuffer, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+		//stackIn.popPose();
 	}
 
 	private boolean isMoving(DragonKaido animatable, float partialTicks) {

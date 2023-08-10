@@ -31,6 +31,7 @@ public enum KaidoAbility {
                 double yA = viewVector.y * KaidoConstants.FIREBALL_VELOCITY;
                 double zA = viewVector.z * KaidoConstants.FIREBALL_VELOCITY;
                 FireballEntity fireball = new FireballEntity(world, serverPlayer, xA, yA, zA);
+                fireball.getTags().add(KaidoConstants.FIREBALL_TAG);
                 fireball.setPos(activeEntity.getX(), getHeadY(activeEntity), activeEntity.getZ());
                 fireball.shoot(viewVector.x(), viewVector.y(), viewVector.z(), KaidoConstants.FIREBALL_VELOCITY, 0.0F);
                 fireball.explosionPower = KaidoConstants.FIREBALL_EXPLOSION_POWER;
@@ -115,7 +116,7 @@ public enum KaidoAbility {
         }
     }
 
-    private static class KaidoConstants {
+    public static class KaidoConstants {
         public static final float FIREBALL_VELOCITY = 1.6F;
         /**
          * See <a href="https://www.color-name.com/fire-yellow.color">Fire Yellow</a>
@@ -125,5 +126,7 @@ public enum KaidoAbility {
                 (short)254, (short)222, (short)23);
         public static final int FIREBALL_EXPLOSION_POWER = 3;
         public static final float ENERGY_BEAM_WIDTH = 0.5F;
+        public static final String FIREBALL_TAG = "kanekaido";
     }
+
 }

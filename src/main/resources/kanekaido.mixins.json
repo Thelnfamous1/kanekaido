@@ -1,9 +1,11 @@
 {
   "required": true,
-  "package": "${project.group}.mixin",
+  "package": "me.infamous.kanekaido.mixin",
   "compatibilityLevel": "JAVA_8",
   "refmap": "${mod_id}.refmap.json",
-  "mixins": [],
+  "mixins": [
+    "DamageProjectileEntityMixin"
+  ],
   "client": [],
   "minVersion": "0.8"
 }

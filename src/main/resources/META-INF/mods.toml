@@ -47,3 +47,24 @@ mandatory=true
 versionRange="${minecraft_version_range}"
 ordering="NONE"
 side="BOTH"
+# Here's another dependency
+[[dependencies.${mod_id}]]
+modId="morph"
+mandatory=true
+versionRange="${morph_version_range}"
+ordering="NONE"
+side="BOTH"
+# Here's another dependency
+[[dependencies.${mod_id}]]
+modId="ichunutil"
+mandatory=true
+versionRange="${ichunutil_version_range}"
+ordering="NONE"
+side="BOTH"
+# Here's another dependency
+[[dependencies.${mod_id}]]
+modId="geckolib3"
+mandatory=true
+versionRange="${geckolib_version_range}"
+ordering="NONE"
+side="BOTH"
