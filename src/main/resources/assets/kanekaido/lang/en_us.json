@@ -1,7 +1,16 @@
 {
+  "entity.kanekaido.dragon_kaido": "Dragon Kaido",
+  "entity.kanekaido.energy_beam": "Energy Beam",
+  "entity.kanekaido.kaido": "Kaido",
+  "item.kanekaido.devil_fruit": "Devil Fruit",
   "key.kanekaido.air_slash": "Air Slash",
   "key.kanekaido.categories.abilities": "Kaido Abilities",
+  "key.kanekaido.categories.attack": "Kaido Attacks",
   "key.kanekaido.categories.morph": "Morph Abilities",
+  "key.kanekaido.dragon_kaido_morph": "Dragon Kaido Morph",
   "key.kanekaido.fire_beam": "Fire Energy Beam",
-  "key.kanekaido.fireball": "Fireball"
+  "key.kanekaido.fireball": "Fireballs",
+  "key.kanekaido.kaido_attack_a": "Ground Pound",
+  "key.kanekaido.kaido_attack_b": "Hammer Strike",
+  "key.kanekaido.kaido_morph": "Kaido Morph"
 }
