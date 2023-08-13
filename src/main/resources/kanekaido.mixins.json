@@ -2,7 +2,7 @@
   "required": true,
   "package": "me.infamous.kanekaido.mixin",
   "compatibilityLevel": "JAVA_8",
-  "refmap": "${mod_id}.refmap.json",
+  "refmap": "kanekaido.refmap.json",
   "mixins": [
     "DamageProjectileEntityMixin",
     "EntityAccess"
