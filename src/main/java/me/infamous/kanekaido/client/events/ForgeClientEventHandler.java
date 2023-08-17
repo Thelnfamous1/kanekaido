@@ -3,12 +3,16 @@ package me.infamous.kanekaido.client.events;
 import me.ichun.mods.morph.common.morph.MorphHandler;
 import me.infamous.kanekaido.KaneKaido;
 import me.infamous.kanekaido.client.keybindings.KKKeyBinding;
+import me.infamous.kanekaido.common.abilities.KaidoAttack;
 import me.infamous.kanekaido.common.entities.Kaido;
+import me.infamous.kanekaido.common.network.NetworkHandler;
+import me.infamous.kanekaido.common.network.ServerboundSpecialAttackPacket;
 import me.infamous.kanekaido.common.registry.KKEntityTypes;
 import me.infamous.kanekaido.mixin.ActiveRenderInfoAccess;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.renderer.ActiveRenderInfo;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,6 +26,7 @@ import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.lwjgl.glfw.GLFW;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = KaneKaido.MODID, value = Dist.CLIENT)
 public class ForgeClientEventHandler {
@@ -39,7 +44,27 @@ public class ForgeClientEventHandler {
         ClientPlayerEntity clientPlayer = minecraft.player;
         if(clientPlayer != null){
             int key = event.getKey();
-            KKKeyBinding.handleAllKeys(key, clientPlayer);
+            handleInput(clientPlayer, key);
+        }
+    }
+
+    private static void handleInput(ClientPlayerEntity clientPlayer, int key) {
+        KKKeyBinding.handleAllKeys(key, clientPlayer);
+        if(key == Minecraft.getInstance().options.keyAttack.getKey().getValue()){
+            LivingEntity activeMorphEntity = MorphHandler.INSTANCE.getActiveMorphEntity(clientPlayer);
+            if(activeMorphEntity != null && activeMorphEntity.getType() == KKEntityTypes.KAIDO.get()){
+                NetworkHandler.INSTANCE.sendToServer(new ServerboundSpecialAttackPacket(KaidoAttack.ATTACK_B));
+            }
+        }
+    }
+
+    @SubscribeEvent
+    static void onClickInput(InputEvent.ClickInputEvent event){
+        Minecraft minecraft = Minecraft.getInstance();
+        ClientPlayerEntity clientPlayer = minecraft.player;
+        if(clientPlayer != null){
+            KeyBinding keyBinding = event.getKeyBinding();
+            handleInput(clientPlayer, keyBinding.getKey().getValue());
         }
     }
 

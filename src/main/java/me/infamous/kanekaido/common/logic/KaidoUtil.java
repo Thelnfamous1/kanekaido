@@ -48,8 +48,15 @@ public class KaidoUtil {
         float knockback = (float) attacker.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
         double xShift = (-MathHelper.sin(attacker.yBodyRot * ((float)Math.PI / 180F))) * shiftScale;
         double zShift = MathHelper.cos(attacker.yBodyRot * ((float)Math.PI  / 180F)) * shiftScale;
+
+        UUID uuidOfPlayerForMorph = MorphHandler.INSTANCE.getUuidOfPlayerForMorph(attacker);
+        PlayerEntity player = null;
+        if(uuidOfPlayerForMorph != null){
+            player = attacker.level.getPlayerByUUID(uuidOfPlayerForMorph);
+        }
+
         for(LivingEntity target : attacker.level.getEntitiesOfClass(LivingEntity.class, attacker.getBoundingBox().move(xShift, 0.0D, zShift).inflate(inflateScale, 0.25D, inflateScale))) {
-            if (target != attacker && !attacker.isAlliedTo(target) && (!(target instanceof ArmorStandEntity) || !((ArmorStandEntity) target).isMarker())) {
+            if (target != attacker && target != player && !attacker.isAlliedTo(target) && (!(target instanceof ArmorStandEntity) || !((ArmorStandEntity) target).isMarker())) {
                 target.knockback(knockback * knockbackScale, MathHelper.sin(attacker.yRot * ((float)Math.PI / 180F)), -MathHelper.cos(attacker.yRot * ((float)Math.PI / 180F)));
                 DamageSource pSource = getMorphDamageSource(attacker);
                 target.hurt(pSource, damage * damageScale);
