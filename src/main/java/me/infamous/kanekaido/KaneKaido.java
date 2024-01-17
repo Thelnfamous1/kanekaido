@@ -4,7 +4,6 @@ import me.infamous.kanekaido.client.keybindings.KKKeyBinding;
 import me.infamous.kanekaido.client.rendering.DragonKaidoRenderer;
 import me.infamous.kanekaido.client.rendering.EnergyBeamRenderer;
 import me.infamous.kanekaido.client.rendering.KaidoRenderer;
-import me.infamous.kanekaido.common.command.KaidoRules;
 import me.infamous.kanekaido.common.network.NetworkHandler;
 import me.infamous.kanekaido.common.registry.KKEntityTypes;
 import me.infamous.kanekaido.common.registry.KKItems;
@@ -38,7 +37,7 @@ public class KaneKaido {
 
     @SubscribeEvent
     public static void onCommonSetup(FMLCommonSetupEvent event) {
-        NetworkHandler.init();
+        event.enqueueWork(NetworkHandler::init);
     }
 
     @SubscribeEvent

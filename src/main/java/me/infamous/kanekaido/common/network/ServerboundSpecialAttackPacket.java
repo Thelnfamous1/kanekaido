@@ -1,7 +1,6 @@
 package me.infamous.kanekaido.common.network;
 
 import me.ichun.mods.morph.common.morph.MorphHandler;
-import me.infamous.kanekaido.KaneKaido;
 import me.infamous.kanekaido.common.abilities.KaidoAttack;
 import me.infamous.kanekaido.common.entities.Kaido;
 import me.infamous.kanekaido.common.registry.KKEntityTypes;
@@ -39,7 +38,7 @@ public class ServerboundSpecialAttackPacket {
             LivingEntity activeMorphEntity = MorphHandler.INSTANCE.getActiveMorphEntity(serverPlayer);
             if(activeMorphEntity != null && activeMorphEntity.getType() == KKEntityTypes.KAIDO.get()){
                 attackType.getKaidoAttack().accept(((Kaido)activeMorphEntity));
-                NetworkHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> serverPlayer), new ClientboundSpecialAttackPacket(packet.attack));
+                NetworkHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> serverPlayer), new ClientboundSpecialAttackPacket(serverPlayer, packet.attack));
             }
         });
         ctx.get().setPacketHandled(true);
